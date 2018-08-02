@@ -1,0 +1,5 @@
+# Directories
+kafkacli.egg-info/
+
+# Files
+*.pyc
