@@ -65,8 +65,8 @@ def main():
     global options
     options = parser.parse_args()
 
-    if options.mode not in ["Consume", "Produce", "List"] :
-        print "Please provide one of the following modes: Consume, Produce, List"
+    if options.mode not in ["consume", "produce", "list"] :
+        print "Please provide one of the following modes: consume, produce, list"
         sys.exit(1)
 
     print_dashed_line()
