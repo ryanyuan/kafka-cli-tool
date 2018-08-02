@@ -60,7 +60,7 @@ def main():
     parser.add_argument('-m', required=True, dest='mode', help="Mode: consume, produce, list")
     parser.add_argument('-b', dest='broker', help="Kafka broker endpoint")
     parser.add_argument('-t', dest='topic', help="Topic")
-    parser.add_argument('-o', dest='offset', help="Offset mode: earliest, latest (Default: 'latest')")
+    parser.add_argument('-o', dest='offset', default="latest", help="Offset mode: earliest, latest (Default: 'latest')")
     
     global options
     options = parser.parse_args()
