@@ -5,6 +5,8 @@ import multiprocessing
 import ConfigParser
 import sys
 from kafka import KafkaConsumer, KafkaProducer
+from kafkacli import util
+from argparse import RawTextHelpFormatter
 
 class Producer(threading.Thread):
     def __init__(self):
@@ -15,7 +17,6 @@ class Producer(threading.Thread):
         self.stop_event.set()
 
     def run(self):
-
         producer = KafkaProducer(bootstrap_servers=options.broker,
                                  retries=5)
 
@@ -51,52 +52,57 @@ class Consumer(multiprocessing.Process):
 def get_topics():
     return KafkaConsumer(bootstrap_servers=options.broker).topics()
     
-def print_dashed_line():
-    print("---------------------------------------------------")
+def _parse_arguments():
+    parser = argparse.ArgumentParser(description=util.DESCRIPTION, formatter_class=RawTextHelpFormatter)
+    parser.add_argument('-m', '--mode', help="Mode: consume, produce, list")
+    parser.add_argument('-b', '--broker', help="Kafka broker endpoint")
+    parser.add_argument('-t', '--topic', help="Kafka topic")
+    parser.add_argument('-o', '--offset', default="latest", help="Offset mode: earliest, latest (default: 'latest')")
+    parser.add_argument('-v', '--version', action='store_true', help="Display kafkacli version")
 
-
-def main():
-    parser = argparse.ArgumentParser(description='''kafkacli - Apache Kafka utility tool''')
-    parser.add_argument('-m', required=True, dest='mode', help="Mode: consume, produce, list")
-    parser.add_argument('-b', dest='broker', help="Kafka broker endpoint")
-    parser.add_argument('-t', dest='topic', help="Topic")
-    parser.add_argument('-o', dest='offset', default="latest", help="Offset mode: earliest, latest (Default: 'latest')")
-    
+    # global options
     global options
     options = parser.parse_args()
 
-    if options.mode not in ["consume", "produce", "list"] :
-        print "Please provide one of the following modes: consume, produce, list"
-        sys.exit(1)
+    if options.version:
+        util.show_version()
+    elif options.mode:
+        if options.mode not in ["consume", "produce", "list"]:
+            # parser.print_help()
+            print "Please provide one of the following modes: consume, produce, list"
+            sys.exit(1)
+        elif not options.broker:
+            # parser.print_help()
+            print "Please provide broker endpoint"
+            sys.exit(1)
+        else:
+            util.print_dashed_line()
+            print("Mode: {}".format(options.mode))
+            print("Broker: {}".format(options.broker))
+            if options.mode in ["consume", "produce"]:
+                print("Topic: {}".format(options.topic))
+            if options.mode == "consume":
+                print("Offset: {}".format(options.offset))
+            util.print_dashed_line()
+            
+    return options
 
-    print_dashed_line()
-    print("Mode: %s" % options.mode)
-    print("Broker: %s" % options.broker)
-    
-    task = None
+def main():
+
+    _parse_arguments()
 
     if options.mode == "produce":
-        print("Topic: %s" % options.topic)
-        print_dashed_line()
-        task = Producer()
-        task.start()
-        task.join()
+        producer_task = Producer()
+        producer_task.start()
+        producer_task.join()
     elif options.mode == "consume":
-        print("Offset: %s" % options.offset)
-        print("Topic: %s" % options.topic)
-        print_dashed_line()
-        task = Consumer()
-        task.start()
-        task.join()
+        consumer_task = Consumer()
+        consumer_task.start()
+        consumer_task.join()
     elif options.mode == "list":
-        print_dashed_line()
         topics = get_topics()
         print("\n".join(str(topic) for topic in topics))
         
         
 if __name__ == "__main__":
-    logging.basicConfig(
-        format='%(asctime)s.%(msecs)s:%(name)s:%(thread)d:%(levelname)s:%(process)d:%(message)s',
-        level=logging.INFO
-        )
     main()
