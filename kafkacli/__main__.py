@@ -48,7 +48,6 @@ class Consumer(multiprocessing.Process):
 
         consumer.close()
         
-
 def get_topics():
     return KafkaConsumer(bootstrap_servers=options.broker).topics()
     
@@ -56,9 +55,9 @@ def _parse_arguments():
     parser = argparse.ArgumentParser(description=util.DESCRIPTION, formatter_class=RawTextHelpFormatter)
     parser.add_argument('-m', '--mode', help="Mode: consume, produce, list")
     parser.add_argument('-b', '--broker', help="Kafka broker endpoint")
-    parser.add_argument('-t', '--topic', help="Kafka topic")
+    parser.add_argument('-t', '--topic', help="Kafka topic to consume from or produce to")
     parser.add_argument('-o', '--offset', default="latest", help="Offset mode: earliest, latest (default: 'latest')")
-    parser.add_argument('-v', '--version', action='store_true', help="Display kafkacli version")
+    parser.add_argument('-V', '--version', action='store_true', help="Display kafkacli version")
 
     # global options
     global options
@@ -68,11 +67,9 @@ def _parse_arguments():
         util.show_version()
     elif options.mode:
         if options.mode not in ["consume", "produce", "list"]:
-            # parser.print_help()
             print "Please provide one of the following modes: consume, produce, list"
             sys.exit(1)
         elif not options.broker:
-            # parser.print_help()
             print "Please provide broker endpoint"
             sys.exit(1)
         else:

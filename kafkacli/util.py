@@ -1,4 +1,4 @@
-VERSION = '0.0.4'
+VERSION = '0.0.6'
 DESCRIPTION = """kafkacli - Apache Kafka utility tool
 https://github.com/ryanyuan/kafkacli
 Copyright (c) 2018-2018, Ryan Yuan
