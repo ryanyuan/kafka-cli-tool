@@ -6,7 +6,7 @@ setup(
     version = util.VERSION,
     description = 'Apache Kafka CLI utility tool.',
     author = 'Ryan Yuan',
-    url = 'https://github.com/ryanyuan/kafka-cli-tool',
+    url = 'https://github.com/ryanyuan/kafkacli',
     packages = ['kafkacli'],
     entry_points = {
         'console_scripts': [
