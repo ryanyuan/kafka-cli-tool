@@ -4,3 +4,4 @@ kafkacli.egg-info/
 
 # Files
 *.pyc
+*.tar.gz
